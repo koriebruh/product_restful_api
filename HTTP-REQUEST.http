@@ -1,0 +1,37 @@
+### GET ALL
+GET http://localhost:3000/api/products
+Accept: application/json
+
+### GET BYID
+GET http://localhost:3000/api/products/4
+Accept: application/json
+
+### CREATE
+POST http://localhost:3000/api/products/
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "RTX 3090",
+    "description": "graphic card for gamming experience",
+    "price": 499,
+    "category": "HardWare",
+    "stock": 22
+}
+
+### UPDATE
+PUT http://localhost:3000/api/products/4
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "RTX 4080Tiiiiiiiii",
+  "description": "graphic card for gamming experience",
+  "price": 499,
+  "category": "HardWare",
+  "stock": 22
+}
+
+### DELETE
+DELETE http://localhost:3000/api/products/5
+Accept: application/json

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/go-playground/validator/v10"
+	"korie/api-product/exception"
 	"korie/api-product/helper"
 	"korie/api-product/model/domain"
 	"korie/api-product/model/web"
@@ -56,10 +57,13 @@ func (service ProductServiceImpl) Update(ctx context.Context, request web.Produc
 	defer helper.CommitOrRollback(tx, err)
 
 	product, err := service.ProductRepository.FindById(ctx, tx, request.Id)
-	helper.IfErrNotNul(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	// <-- menampung data request user
 	product = domain.Product{
+		Id:          request.Id,
 		Name:        request.Name,
 		Description: request.Description,
 		Price:       request.Price,
@@ -78,7 +82,9 @@ func (service ProductServiceImpl) Delete(ctx context.Context, productId int) {
 	defer helper.CommitOrRollback(tx, err)
 
 	product, err := service.ProductRepository.FindById(ctx, tx, productId)
-	helper.IfErrNotNul(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	service.ProductRepository.Delete(ctx, tx, product)
 
@@ -90,7 +96,9 @@ func (service ProductServiceImpl) FindById(ctx context.Context, productId int) w
 	defer helper.CommitOrRollback(tx, err)
 
 	product, err := service.ProductRepository.FindById(ctx, tx, productId)
-	helper.IfErrNotNul(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	return helper.ToProductResponse(product)
 }

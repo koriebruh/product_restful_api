@@ -30,7 +30,7 @@ func (repository *ProductRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, p
 }
 
 func (repository *ProductRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, product domain.Product) domain.Product {
-	SQL := "UPDATE products SET name=?, description=?, price=?, category=?, stock=? WHERE id =?"
+	SQL := "UPDATE products SET name=?, description=?, price=?, category=?, stock=? WHERE id=?"
 	_, err := tx.ExecContext(ctx, SQL, product.Name, product.Description, product.Price, product.Category, product.Stock, product.Id)
 	helper.IfErrNotNul(err)
 

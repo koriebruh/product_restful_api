@@ -3,7 +3,7 @@ GET http://localhost:3000/api/products
 Accept: application/json
 
 ### GET BYID
-GET http://localhost:3000/api/products/4
+GET http://localhost:3000/api/products/92
 Accept: application/json
 
 ### CREATE

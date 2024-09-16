@@ -5,7 +5,6 @@ import (
 	"korie/api-product/helper"
 	"korie/api-product/model/web"
 	"korie/api-product/service"
-	"net/http"
 	"strconv"
 )
 
@@ -19,13 +18,14 @@ func NewProductController(productService service.ProductService) ProductControll
 	}
 }
 
-func (controller ProductControllerImpl) Create(writer http.ResponseWriter, request *http.Request, c *gin.Context) {
+func (controller ProductControllerImpl) Create(c *gin.Context) {
 	/// SAVE HASIL DECODE
 	productCreateRequest := web.ProductCreateRequest{}
-	helper.ReadFromRequestBody(request, &productCreateRequest)
+	err := c.ShouldBindJSON(&productCreateRequest) // DECODE JSON FROM REQ BODY
+	helper.IfErrNotNul(err)
 
 	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT
-	ProductResponse := controller.ProductService.Create(request.Context(), productCreateRequest)
+	ProductResponse := controller.ProductService.Create(c.Request.Context(), productCreateRequest)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -33,13 +33,14 @@ func (controller ProductControllerImpl) Create(writer http.ResponseWriter, reque
 	}
 
 	/// GIVE OUTPUT TO CLIENT
-	helper.WriteToResponseJson(writer, webResponse)
+	c.JSON(200, webResponse)
 }
 
-func (controller ProductControllerImpl) Update(writer http.ResponseWriter, request *http.Request, c *gin.Context) {
+func (controller ProductControllerImpl) Update(c *gin.Context) {
 	/// SAVE HASIL DECODE
 	productUpdateRequest := web.ProductUpdateRequest{}
-	helper.ReadFromRequestBody(request, &productUpdateRequest)
+	err := c.ShouldBindJSON(&productUpdateRequest) // DECODE JSON FROM REQ BODY
+	helper.IfErrNotNul(err)
 
 	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT )
 	productId := c.Param("id") /// MENGAMBIL PARAM
@@ -47,7 +48,7 @@ func (controller ProductControllerImpl) Update(writer http.ResponseWriter, reque
 	helper.IfErrNotNul(err)
 	productUpdateRequest.Id = id
 
-	ProductResponse := controller.ProductService.Update(request.Context(), productUpdateRequest)
+	ProductResponse := controller.ProductService.Update(c.Request.Context(), productUpdateRequest)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -55,34 +56,38 @@ func (controller ProductControllerImpl) Update(writer http.ResponseWriter, reque
 	}
 
 	/// GIVE OUTPUT TO CLIENT
-	helper.WriteToResponseJson(writer, webResponse)
+	c.JSON(200, webResponse)
 
 }
 
-func (controller ProductControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, c *gin.Context) {
+func (controller ProductControllerImpl) Delete(c *gin.Context) {
 	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT )
 	productId := c.Param("id") /// MENGAMBIL PARAM
 	id, err := strconv.Atoi(productId)
 	helper.IfErrNotNul(err)
 
-	controller.ProductService.Delete(request.Context(), id)
+	controller.ProductService.Delete(c.Request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
 	}
 
 	/// GIVE OUTPUT TO CLIENT
-	helper.WriteToResponseJson(writer, webResponse)
+	c.JSON(200, webResponse)
 
 }
 
-func (controller ProductControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, c *gin.Context) {
+func (controller ProductControllerImpl) FindById(c *gin.Context) {
 	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT )
 	productId := c.Param("id") /// MENGAMBIL PARAM
 	id, err := strconv.Atoi(productId)
 	helper.IfErrNotNul(err)
 
-	productResponse := controller.ProductService.FindById(request.Context(), id)
+	productResponse := controller.ProductService.FindById(c.Request.Context(), id)
+	//if productResponse == (web.ProductResponse{}) {
+	//	return
+	//}
+
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -90,12 +95,12 @@ func (controller ProductControllerImpl) FindById(writer http.ResponseWriter, req
 	}
 
 	/// GIVE OUTPUT TO CLIENT
-	helper.WriteToResponseJson(writer, webResponse)
+	c.JSON(200, webResponse)
 
 }
 
-func (controller ProductControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, c *gin.Context) {
-	productResponses := controller.ProductService.FindAll(request.Context())
+func (controller ProductControllerImpl) FindAll(c *gin.Context) {
+	productResponses := controller.ProductService.FindAll(c.Request.Context())
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "OK",
@@ -103,6 +108,6 @@ func (controller ProductControllerImpl) FindAll(writer http.ResponseWriter, requ
 	}
 
 	/// GIVE OUTPUT TO CLIENT
-	helper.WriteToResponseJson(writer, webResponse)
+	c.JSON(200, webResponse)
 
 }

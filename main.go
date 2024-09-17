@@ -5,7 +5,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"korie/api-product/app"
 	"korie/api-product/controller"
-	"korie/api-product/exception"
 	"korie/api-product/helper"
 	"korie/api-product/repository"
 	"korie/api-product/service"
@@ -19,7 +18,6 @@ func main() {
 	productController := controller.NewProductController(productService)
 
 	r := gin.Default()
-	r.Use(exception.ErrorHandler())
 
 	r.GET("api/products", productController.FindAll)       // GET ALL
 	r.POST("api/products", productController.Create)       // CREATE

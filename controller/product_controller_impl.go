@@ -2,9 +2,11 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"korie/api-product/exception"
 	"korie/api-product/helper"
 	"korie/api-product/model/web"
 	"korie/api-product/service"
+	"net/http"
 	"strconv"
 )
 
@@ -26,14 +28,9 @@ func (controller ProductControllerImpl) Create(c *gin.Context) {
 
 	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT
 	ProductResponse := controller.ProductService.Create(c.Request.Context(), productCreateRequest)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   ProductResponse,
-	}
 
 	/// GIVE OUTPUT TO CLIENT
-	c.JSON(200, webResponse)
+	exception.ErrorOrSuccess(c, http.StatusOK, ProductResponse)
 }
 
 func (controller ProductControllerImpl) Update(c *gin.Context) {
@@ -45,27 +42,25 @@ func (controller ProductControllerImpl) Update(c *gin.Context) {
 	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT )
 	productId := c.Param("id") /// MENGAMBIL PARAM
 	id, err := strconv.Atoi(productId)
-	helper.IfErrNotNul(err)
+	if err != nil {
+		exception.ErrorOrSuccess(c, http.StatusBadRequest, "Invalid product ID")
+		return
+	}
 	productUpdateRequest.Id = id
 
+	///GIVE OUPUT KE CLIENT
 	ProductResponse := controller.ProductService.Update(c.Request.Context(), productUpdateRequest)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   ProductResponse,
-	}
-
-	/// GIVE OUTPUT TO CLIENT
-	c.JSON(200, webResponse)
+	exception.ErrorOrSuccess(c, http.StatusOK, ProductResponse)
 
 }
 
 func (controller ProductControllerImpl) Delete(c *gin.Context) {
-	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT )
+	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT JSON
 	productId := c.Param("id") /// MENGAMBIL PARAM
 	id, err := strconv.Atoi(productId)
 	helper.IfErrNotNul(err)
 
+	// RESPONSE SUKSES
 	controller.ProductService.Delete(c.Request.Context(), id)
 	webResponse := web.WebResponse{
 		Code:   200,
@@ -78,36 +73,29 @@ func (controller ProductControllerImpl) Delete(c *gin.Context) {
 }
 
 func (controller ProductControllerImpl) FindById(c *gin.Context) {
-	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT )
-	productId := c.Param("id") /// MENGAMBIL PARAM
+	/// EXECUTE SERVICE AND IMPLEMENTATION FORMAT OUTPUT JSON
+	productId := c.Param("id")
 	id, err := strconv.Atoi(productId)
-	helper.IfErrNotNul(err)
-
-	productResponse := controller.ProductService.FindById(c.Request.Context(), id)
-	//if productResponse == (web.ProductResponse{}) {
-	//	return
-	//}
-
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   productResponse,
+	if err != nil {
+		exception.ErrorOrSuccess(c, http.StatusBadRequest, "Invalid product ID")
+		return
 	}
 
-	/// GIVE OUTPUT TO CLIENT
-	c.JSON(200, webResponse)
+	/// OUTPUT JIKA DATA TIDAK TI DEMUKAN DI DB
+	productResponse := controller.ProductService.FindById(c.Request.Context(), id)
+	if productResponse == (web.ProductResponse{}) {
+		exception.ErrorOrSuccess(c, http.StatusNotFound, "Product not found")
+		return
+	}
+
+	// OUTPUT KETIKA SUKSES
+	exception.ErrorOrSuccess(c, http.StatusOK, productResponse)
 
 }
 
 func (controller ProductControllerImpl) FindAll(c *gin.Context) {
 	productResponses := controller.ProductService.FindAll(c.Request.Context())
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
-		Data:   productResponses,
-	}
 
 	/// GIVE OUTPUT TO CLIENT
-	c.JSON(200, webResponse)
-
+	exception.ErrorOrSuccess(c, http.StatusOK, productResponses)
 }

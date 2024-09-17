@@ -3,7 +3,7 @@ GET http://localhost:3000/api/products
 Accept: application/json
 
 ### GET BYID
-GET http://localhost:3000/api/products/92
+GET http://localhost:3000/api/products/4
 Accept: application/json
 
 ### CREATE
@@ -12,20 +12,20 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "name": "RTX 3090",
-    "description": "graphic card for gamming experience",
-    "price": 499,
-    "category": "HardWare",
-    "stock": 22
+  "name": "Blue AtlasEsss",
+  "description": " the signature fragrance from personal care brand Blu Atlas is inspired by the sights, scents, and sensations of Bali’s coastal jungles",
+  "price": 999,
+  "category": "parfume",
+  "stock": 10
 }
 
 ### UPDATE
-PUT http://localhost:3000/api/products/4
+PUT http://localhost:3000/api/products/12
 Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "RTX 4080Tiiiiiiiii",
+  "name": "RTX 4080Tiiiiiiiiissssssssssssswwwwwww",
   "description": "graphic card for gamming experience",
   "price": 499,
   "category": "HardWare",
@@ -33,5 +33,5 @@ Content-Type: application/json
 }
 
 ### DELETE
-DELETE http://localhost:3000/api/products/5
+DELETE http://localhost:3000/api/products/12
 Accept: application/json
